@@ -1,0 +1,7 @@
+*.exe
+
+bin/
+
+.env
+.env.local
+.env.*.local
