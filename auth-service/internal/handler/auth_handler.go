@@ -6,17 +6,18 @@ import (
 
 	"github.com/dmehra2102/go-realtime-chat/auth-service/internal/models"
 	"github.com/dmehra2102/go-realtime-chat/auth-service/internal/service"
+	"github.com/dmehra2102/go-realtime-chat/shared/pkg/logger"
 )
 
 type AuthHandler struct {
 	authService service.AuthService
-	// logger *logger.Logger
+	logger      *logger.Logger
 }
 
-func NewAuthHandler(authService service.AuthService, // logger *logger.Logger)
-) *AuthHandler {
+func NewAuthHandler(authService service.AuthService, logger *logger.Logger) *AuthHandler {
 	return &AuthHandler{
 		authService: authService,
+		logger:      logger,
 	}
 }
 
@@ -29,7 +30,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 
 	tokenResp, err := h.authService.Register(&req)
 	if err != nil {
-		// h.logger.Error("Registration failed", "error",err)
+		h.logger.Error("Registration failed", "error", err)
 		h.respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -46,7 +47,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 	tokenResp, err := h.authService.Login(&req)
 	if err != nil {
-		// h.logger.Error("Login failed", "error",err)
+		h.logger.Error("Login failed", "error", err)
 		h.respondError(w, http.StatusUnauthorized, err.Error())
 		return
 	}
