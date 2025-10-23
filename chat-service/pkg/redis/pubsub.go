@@ -25,7 +25,15 @@ func (r *RedisPubSub) Publish(ctx context.Context, channel, message string) erro
 
 func (r *RedisPubSub) Subscribe(ctx context.Context, channel string) <-chan string {
 	pubSub := r.client.Subscribe(ctx, channel)
-	msgChan := make(chan string)
+	msgChan := make(chan string, 100)
+
+	if _,err := pubSub.Receive(ctx); err != nil {
+		r.logger.Error("failed to subscribe to channel", "channel", channel, "error", err)
+		pubSub.Close()
+		closedChan := make(chan string)
+		close(closedChan)
+		return closedChan
+	}
 
 	go func() {
 		defer close(msgChan)
@@ -41,7 +49,7 @@ func (r *RedisPubSub) Subscribe(ctx context.Context, channel string) <-chan stri
 					if ctx.Err() != nil {
 						return
 					}
-					r.logger.Error("Redis subscription error", "error", err)
+					r.logger.Error("Redis subscription error", "channel", channel, "error", err)
 					continue
 				}
 
