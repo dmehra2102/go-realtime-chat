@@ -27,7 +27,7 @@ func (r *RedisPubSub) Subscribe(ctx context.Context, channel string) <-chan stri
 	pubSub := r.client.Subscribe(ctx, channel)
 	msgChan := make(chan string, 100)
 
-	if _,err := pubSub.Receive(ctx); err != nil {
+	if _, err := pubSub.Receive(ctx); err != nil {
 		r.logger.Error("failed to subscribe to channel", "channel", channel, "error", err)
 		pubSub.Close()
 		closedChan := make(chan string)
