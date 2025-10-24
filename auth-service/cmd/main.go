@@ -30,7 +30,7 @@ func main() {
 	cfg := config.LoadConfig()
 
 	// Connect to Database
-	db,err := database.NewPostgresConnection(cfg.Database)
+	db, err := database.NewPostgresConnection(cfg.Database)
 	if err != nil {
 		appLogger.Fatal("Failed to connect to database", "error", err)
 	}
@@ -53,14 +53,14 @@ func main() {
 
 	// Create Server
 	srv := &http.Server{
-		Addr: ":" + cfg.AuthServicePort,
-		Handler: router,
-		ReadTimeout: 15 * time.Second,
+		Addr:         ":" + cfg.AuthServicePort,
+		Handler:      router,
+		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
-		IdleTimeout: 15 * time.Second,
+		IdleTimeout:  15 * time.Second,
 	}
 
-	go func(){
+	go func() {
 		appLogger.Info("Auth Service starting", "port", cfg.AuthServicePort)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			appLogger.Fatal("Failed to start server", "error", err)
@@ -70,11 +70,11 @@ func main() {
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-	<- quit
+	<-quit
 
 	appLogger.Info("Shutting down auth service...")
 
-	ctx,cancel := context.WithTimeout(context.Background(), 30 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	if err := srv.Shutdown(ctx); err != nil {
