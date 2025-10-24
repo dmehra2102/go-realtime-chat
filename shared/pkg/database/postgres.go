@@ -16,7 +16,7 @@ import (
 )
 
 type Database struct {
-	db     *gorm.DB
+	DB     *gorm.DB
 	config config.DatabaseConfig
 }
 
@@ -43,7 +43,7 @@ func NewPostgresConnection(config config.DatabaseConfig) (*Database, error) {
 	}
 
 	return &Database{
-		db:     db,
+		DB:     db,
 		config: config,
 	}, nil
 }
